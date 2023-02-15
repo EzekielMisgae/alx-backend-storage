@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
-"""
-Redis module, Writing strings to Redis
-Reading from Redis and recovering original type
-Incrementing values, storing lists, Retrieving lists
-"""
-import redis
+'''A module for using the Redis NoSQL data storage.
+'''
 import uuid
-from typing import Union, Callable, Any
+import redis
 from functools import wraps
+from typing import Any, Callable, Union
+
 
 def count_calls(method: Callable) -> Callable:
     '''Tracks the number of calls made to a method in a Cache class.
@@ -102,3 +100,4 @@ class Cache:
         '''Retrieves an integer value from a Redis data storage.
         '''
         return self.get(key, lambda x: int(x))
+        
