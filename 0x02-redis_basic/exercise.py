@@ -77,6 +77,7 @@ class Cache():
     def get_int(self, key: str) -> Union[int, None]:
         return self.get(key, lambda x: int(x.decode()))
 
+    @call_history
     @count_calls
     def store(self, data: Union[str, bytes, int, float]) -> str:
         key = str(uuid.uuid4())
