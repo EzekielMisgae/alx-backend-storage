@@ -22,8 +22,20 @@ class Cache():
         """
         self._redis = redis.Redis()
         self._redis.flushdb()
-        
+
     def store(self, data: Union[str, bytes, int, float]) -> str:
         key = str(uuid.uuid4())
         self._redis.set(key, data)
         return key
+
+    def get(self, key: str, fn: Callable = lambda x: x) -> Union[bytes, str, int, float, None]:
+        data = self._redis.get(key)
+        if data is None:
+            return None
+        return fn(data)
+
+    def get_str(self, key: str) -> Union[str, None]:
+        return self.get(key, lambda x: x.decode())
+
+    def get_int(self, key: str) -> Union[int, None]:
+        return self.get(key, lambda x: int(x.decode()))
