@@ -88,17 +88,20 @@ class Cache():
         self._redis.set(key, data)
         return key
 
-    def get(self, key: str, fn: Callable = lambda x: x) -> Union[bytes, str, int, float, None]:
-        data = self._redis.get(key)
-        if data is None:
-            return None
-        return fn(data)
+    def get(self, key: str,
+            fn: Optional[Callable] = None) -> Union[str, bytes, int, float]:
+        """
+        Convert data back to desired format
+        """
+        value = self._redis.get(key)
+        return value if not fn else fn(value)
 
-    def get_str(self, key: str) -> Union[str, None]:
-        return self.get(key, lambda x: x.decode())
+    def get_int(self, key):
+        return self.get(key, int)
 
-    def get_int(self, key: str) -> Union[int, None]:
-        return self.get(key, lambda x: int(x.decode()))
+    def get_str(self, key):
+        value = self._redis.get(key)
+        return value.decode("utf-8")
 
     @call_history
     @count_calls
