@@ -1,23 +1,25 @@
 #!/usr/bin/env python3
-""" Module: Redis Server,  Implementing an
-expiring web cache and tracker"""
+"""
+Implementing an expiring web cache and tracker
+obtain the HTML content of a particular URL and returns it
+"""
 import redis
-from typing import Union, Optional, Callable
 import requests
 
-redis = redis.Redis()
-incr = 0
-
+r = redis.Redis()
+count = 0
 
 def get_page(url: str) -> str:
-    """Function: expiring web cache and tracker"""
-
-    response = requests.get(url)
-    redis.set(f"cached:{url}", incr)
-    redis.incr(f"count:{url}")
-    redis.setex(f"cached:{url}", 10, redis.get(f"cached:{url}"))
-    return response.text
-
+    """
+    track how many times a particular URL was accessed in the key
+    "count:{url}" and cache the result with an expiration time of
+    10 seconds
+    """
+    r.set(f"cached:{url}", count)
+    resp = requests.get(url)
+    r.incr(f"count:{url}")
+    r.setex(f"cached:{url}", 10, r.get(f"cached:{url}"))
+    return resp.text
 
 if __name__ == "__main__":
     get_page('http://slowwly.robertomurray.co.uk')
