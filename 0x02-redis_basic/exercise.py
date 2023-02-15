@@ -10,13 +10,22 @@ from typing import Union, Callable, Optional
 import functools
 from functools import wraps
 
-def count_calls(fn: Callable) -> Callable:
-        @functools.wraps(fn)
-        def wrapped(self, *args, **kwargs):
-            key = fn.__qualname__
-            self._redis.incr(key)
-            return fn(self, *args, **kwargs)
-        return wrapped
+
+def count_calls(method: Callable) -> Callable:
+    """
+    Prototype: def count_calls(method: Caallable) -> Callable:
+    Returns a Callable
+    """
+    @wraps(method)
+    def wrapper(self, *args, **kwds):
+        """
+        Prototype: def wrapper(self, *args, **kwds):
+        Returns wrapper
+        """
+        key_m = method.__qualname__
+        self._redis.incr(key_m)
+        return method(self, *args, **kwds)
+    return wrapper
 class Cache():
     """
     Store instance of Redis client as private variable _redis
