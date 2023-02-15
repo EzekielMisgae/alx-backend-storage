@@ -3,33 +3,20 @@
     obtain the HTML content of a particular URL and returns it """
 import redis
 import requests
-from functools import wraps
-from typing import Callable
+r = redis.Redis()
+count = 0
 
-redis = redis.Redis()
 
-def cache_expiring(ttl: int):
-    def decorator(func):
-        @wraps(func)
-        def wrapper(*args):
-            url = args[0]
-            cached_content = redis.get(f"cached:{url}")
-            if cached_content is not None:
-                return cached_content.decode("utf-8")
-            else:
-                resp = requests.get(url)
-                redis.incr(f"count:{url}")
-                redis.set(f"cached:{url}", resp.content)
-                redis.expire(f"cached:{url}", ttl)
-                return resp.text
-        return wrapper
-    return decorator
-
-@cache_expiring(10)
 def get_page(url: str) -> str:
-    """Function: expiring web cache and tracker"""
-    response = requests.get(url)
-    return response.text
+    """ track how many times a particular URL was accessed in the key
+        "count:{url}"
+        and cache the result with an expiration time of 10 seconds """
+    r.set(f"cached:{url}", count)
+    resp = requests.get(url)
+    r.incr(f"count:{url}")
+    r.setex(f"cached:{url}", 10, r.get(f"cached:{url}"))
+    return resp.text
+
 
 if __name__ == "__main__":
-    get_page('http://slowwly.robertomurray.co.uk') 
+    get_page('http://slowwly.robertomurray.co.uk')
