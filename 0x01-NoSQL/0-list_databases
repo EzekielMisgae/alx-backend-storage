@@ -1,2 +1,3 @@
-// Write a script that lists all databases in MongoDB
+// list all database present in a session
+
 show dbs

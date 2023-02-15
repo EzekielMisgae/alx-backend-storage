@@ -1,2 +1,2 @@
-// Write script that creates or uses the database my_db
+// create or use a database
 use my_db

@@ -1,16 +1,14 @@
 #!/usr/bin/env python3
 """
-List all documents in a collection
-Prototype: def list_all(mongo_collection):
-Return an empty list if no document in the collection
-mongo_collection will be the pymongo collection object
+This module have a utility function that list all document
 """
+import pymongo
 
 
 def list_all(mongo_collection):
     """
-    Prototype: def list_all(mongo_collection)
-    Return an empty list if no document in the collection
+    list all collections
     """
-    documents = mongo_collection.find()
-    return documents
+    if not mongo_collection:
+        return []
+    return list(mongo_collection.find())
